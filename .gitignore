@@ -1,0 +1,15 @@
+
+*.suo
+*.user
+_ReSharper.*/
+*.sdf
+bin/
+obj/
+Debug/
+*.vsidx
+*.v2
+*.v2
+*.1
+*.v2
+.vs/JDP-TTT-API/DesignTimeBuild/.dtbcache.v2
+.vs/JDP-TTT-API/v17/.suo
