@@ -13,5 +13,15 @@ namespace JDP_TTT_API.Services {
             IMongoDatabase database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
             _gamesCollection = database.GetCollection<games>(mongoDBSettings.Value.CollectionName);
         }
+
+        public async Task<games> createInitialGameAsync() {
+
+            games initGame = new games();
+            initGame.player_1 = Guid.NewGuid().ToString();
+            initGame.player_2 = Guid.NewGuid().ToString();
+
+            await _gamesCollection.InsertOneAsync(initGame);
+            return initGame;
+        }
     }
 }
