@@ -23,5 +23,12 @@ namespace JDP_TTT_API.Services {
             await _gamesCollection.InsertOneAsync(initGame);
             return initGame;
         }
+
+        public async Task createMoveAsync(string id, moves move) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", id);
+            UpdateDefinition<games> update = Builders<games>.Update.AddToSet("moves", move );
+            await _gamesCollection.UpdateOneAsync(filter, update);
+            return;
+        }
     }
 }
