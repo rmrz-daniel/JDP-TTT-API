@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\JDP-TTT-API.props" />
+</Project>
