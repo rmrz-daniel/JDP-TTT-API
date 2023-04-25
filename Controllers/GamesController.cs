@@ -22,7 +22,7 @@ namespace JDP_TTT_API.Controllers {
             return CreatedAtAction(nameof(InitGame), new { GameID = game.Gameid, Player1_ID = game.player_1, Player2_ID = game.player_2 });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("/registermove/{id}")]
         public async Task<IActionResult> registerMove(string id, [FromBody] moves move) {
             List<moves> moveList = await _mongoDBService.getMoveList(id);
             games gameInfo = await _mongoDBService.getGameInfo(id);
@@ -33,28 +33,28 @@ namespace JDP_TTT_API.Controllers {
             };
 
             if (move.player != gameInfo.player_2 && move.player != gameInfo.player_1) {
-                return BadRequest("Player id provided does not match up with the registered player id's for the game");
+                return BadRequest( new { Error = "Player id provided does not match up with the registered player id's for the game" });
             }
 
             if (moveList == null) {
-                return BadRequest("Move list cannot be null");
+                return BadRequest( new { Error = "Move list cannot be null" });
             }
 
             if (moveList.Count > 0 && moveList[moveList.Count - 1].player == move.player) {
-                return BadRequest("Player already went");
+                return BadRequest( new { Error = "Player already went" });
             }
 
             if (move.col > 3 || move.col < 1 || move.row > 3 || move.row < 1) {
-                return BadRequest("The cordinates are not valid");
+                return BadRequest( new { Error = "The cordinates are not valid" });
             }
 
             if (moveList.Count == 9) {
-                return BadRequest("This game has already finished");
+                return BadRequest( new { Error = "This game has already finished" } );
             }
 
             foreach (var m in moveList) {
                 if ((m.col, m.row) == (move.col, move.row)) {
-                    return BadRequest("This position has already been played");
+                    return BadRequest( new { Error = "This position has already been played" });
                 };
             }
 
@@ -66,12 +66,17 @@ namespace JDP_TTT_API.Controllers {
 
             await _mongoDBService.createMoveAsync(id, move);
 
-            if (winCheck(move.player, board)) {
-                return CreatedAtAction(nameof(registerMove), $"The player: {move.player} has won");
+            if(winCheck(move.player,board) == false && moveList.Count == 8) {
+                await _mongoDBService.updateRunningStatus(id, false);
+                return CreatedAtAction(nameof(registerMove), new { success = true, status = "tie"});
             }
 
+            if (winCheck(move.player, board)) {
+                await _mongoDBService.updateRunningStatus(id, false);
+                return CreatedAtAction(nameof(registerMove), new { success = true, status = "win", winner = move.player });
+            }
 
-            return CreatedAtAction(nameof(registerMove), "Move registered");
+            return CreatedAtAction(nameof(registerMove), new { success = true });
         }
 
         private bool winCheck(string playerId, string[,] board) {

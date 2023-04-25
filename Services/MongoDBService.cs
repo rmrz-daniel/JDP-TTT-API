@@ -18,6 +18,7 @@ namespace JDP_TTT_API.Services {
         public async Task<games> createInitialGameAsync() {
 
             games initGame = new games();
+            initGame.isRunning = true;
             initGame.player_1 = Guid.NewGuid().ToString();
             initGame.player_2 = Guid.NewGuid().ToString();
 
@@ -28,6 +29,13 @@ namespace JDP_TTT_API.Services {
         public async Task<UpdateResult> createMoveAsync(string gameId, moves move) {
             FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
             UpdateDefinition<games> update = Builders<games>.Update.AddToSet("moves", move);
+
+            return await _gamesCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<UpdateResult> updateRunningStatus(string gameId, bool active) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
+            UpdateDefinition<games> update = Builders<games>.Update.Set("isRunning", active);
 
             return await _gamesCollection.UpdateOneAsync(filter, update);
         }
