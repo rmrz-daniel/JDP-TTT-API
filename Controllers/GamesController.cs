@@ -22,6 +22,24 @@ namespace JDP_TTT_API.Controllers {
             return CreatedAtAction(nameof(InitGame), new { GameID = game.Gameid, Player1_ID = game.player_1, Player2_ID = game.player_2 });
         }
 
+        [HttpGet("/listActiveGames")]
+        public async Task<IActionResult> listActiveGames() {
+
+            List<games> games = await _mongoDBService.getGames(true);
+            List<returningGameStruct> parsed = new List<returningGameStruct>();
+
+            foreach (var game in games){
+                parsed.Add(new returningGameStruct {
+                    Gameid = game.Gameid,
+                    player_1 = game.player_1,
+                    player_2 = game.player_2,
+                    moves = game.moves.Count
+                });
+            }
+
+            return CreatedAtAction(nameof(InitGame), parsed);
+        }
+
         [HttpPut("/registermove/{id}")]
         public async Task<IActionResult> registerMove(string id, [FromBody] moves move) {
             List<moves> moveList = await _mongoDBService.getMoveList(id);
@@ -31,6 +49,10 @@ namespace JDP_TTT_API.Controllers {
                 { "-", "-", "-" },
                 { "-", "-", "-" }
             };
+
+            if (gameInfo.isRunning == false) {
+                return BadRequest(new { Error = "This game has already ended" });
+            }
 
             if (move.player != gameInfo.player_2 && move.player != gameInfo.player_1) {
                 return BadRequest( new { Error = "Player id provided does not match up with the registered player id's for the game" });
