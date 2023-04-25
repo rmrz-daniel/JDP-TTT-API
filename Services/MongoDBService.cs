@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JDP_TTT_API.Services {
     public class MongoDBService {
@@ -24,11 +25,25 @@ namespace JDP_TTT_API.Services {
             return initGame;
         }
 
-        public async Task createMoveAsync(string id, moves move) {
-            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", id);
-            UpdateDefinition<games> update = Builders<games>.Update.AddToSet("moves", move );
-            await _gamesCollection.UpdateOneAsync(filter, update);
-            return;
+        public async Task<UpdateResult> createMoveAsync(string gameId, moves move) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
+            UpdateDefinition<games> update = Builders<games>.Update.AddToSet("moves", move);
+
+            return await _gamesCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<List<moves>> getMoveList(string gameId) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
+            var game = await _gamesCollection.Find(filter).FirstAsync();
+
+            return game.moves;
+        }
+
+        public async Task<games> getGameInfo(string gameId) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
+            var game = await _gamesCollection.Find(filter).FirstAsync();
+
+            return game;
         }
     }
 }
