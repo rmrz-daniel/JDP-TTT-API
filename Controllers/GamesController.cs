@@ -26,6 +26,11 @@ namespace JDP_TTT_API.Controllers {
         public async Task<IActionResult> registerMove(string id, [FromBody] moves move) {
             List<moves> moveList = await _mongoDBService.getMoveList(id);
             games gameInfo = await _mongoDBService.getGameInfo(id);
+            string[,] board = new string[3, 3]{
+                { "-", "-", "-" },
+                { "-", "-", "-" },
+                { "-", "-", "-" }
+            };
 
             if (move.player != gameInfo.player_2 && move.player != gameInfo.player_1) {
                 return BadRequest("Player id provided does not match up with the registered player id's for the game");
@@ -43,14 +48,58 @@ namespace JDP_TTT_API.Controllers {
                 return BadRequest("The cordinates are not valid");
             }
 
+            if (moveList.Count == 9) {
+                return BadRequest("This game has already finished");
+            }
+
             foreach (var m in moveList) {
                 if ((m.col, m.row) == (move.col, move.row)) {
                     return BadRequest("This position has already been played");
                 };
             }
 
+            board[move.row - 1, move.col - 1] = move.player;
+
+            foreach (var m in moveList) {
+                board[m.row - 1, m.col - 1] = m.player;
+            }
+
             await _mongoDBService.createMoveAsync(id, move);
+
+            if (winCheck(move.player, board)) {
+                return CreatedAtAction(nameof(registerMove), $"The player: {move.player} has won");
+            }
+
+
             return CreatedAtAction(nameof(registerMove), "Move registered");
+        }
+
+        private bool winCheck(string playerId, string[,] board) {
+            // check row
+            for(int row = 0; row < 3; row++) {
+                if (board[row, 0] == playerId && board[row, 1] == playerId && board[row, 2] == playerId) {
+                    return true;
+                }
+            }
+
+            // check cols
+            for (int col = 0; col < 3; col++) {
+                if (board[0, col] == playerId && board[1, col] == playerId && board[2, col] == playerId) {
+                    return true;
+                }
+            }
+
+            // Check diagonal
+            if (board[0, 0] == playerId && board[1, 1] == playerId && board[2, 2] == playerId) {
+                return true;
+            }
+
+            // Check anti-diagonal
+            if (board[0, 2] == playerId && board[1, 1] == playerId && board[2, 0] == playerId) {
+                return true;
+            }
+
+            return false;
         }
 
 
