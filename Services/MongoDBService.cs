@@ -49,9 +49,14 @@ namespace JDP_TTT_API.Services {
 
         public async Task<games> getGameInfo(string gameId) {
             FilterDefinition<games> filter = Builders<games>.Filter.Eq("Gameid", gameId);
-            var game = await _gamesCollection.Find(filter).FirstAsync();
 
-            return game;
+            return await _gamesCollection.Find(filter).FirstAsync(); ;
+        }
+
+        public async Task<List<games>> getGames(bool active) {
+            FilterDefinition<games> filter = Builders<games>.Filter.Eq("isRunning", active);
+
+            return await _gamesCollection.Find(filter).ToListAsync();
         }
     }
 }
