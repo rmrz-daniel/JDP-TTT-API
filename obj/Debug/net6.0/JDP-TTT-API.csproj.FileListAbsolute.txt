@@ -43,3 +43,4 @@ C:\Users\capon\OneDrive\Desktop\Dev\c#\JDP-TTT-API\obj\Debug\net6.0\refint\JDP-T
 C:\Users\capon\OneDrive\Desktop\Dev\c#\JDP-TTT-API\obj\Debug\net6.0\JDP-TTT-API.pdb
 C:\Users\capon\OneDrive\Desktop\Dev\c#\JDP-TTT-API\obj\Debug\net6.0\JDP-TTT-API.genruntimeconfig.cache
 C:\Users\capon\OneDrive\Desktop\Dev\c#\JDP-TTT-API\obj\Debug\net6.0\ref\JDP-TTT-API.dll
+C:\Users\capon\OneDrive\Desktop\Dev\c#\JDP-TTT-API\bin\Debug\net6.0\appsettings.docker.json

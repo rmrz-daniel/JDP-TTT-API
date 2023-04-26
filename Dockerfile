@@ -1,25 +1,16 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /App
 
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
+# Copy everything
+COPY . ./
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /App
+COPY --from=build-env /App/out .
 EXPOSE 80
-EXPOSE 443
-
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["JDP-TTT-API.csproj", "."]
-RUN dotnet restore "./JDP-TTT-API.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "JDP-TTT-API.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "JDP-TTT-API.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "JDP-TTT-API.dll"]
