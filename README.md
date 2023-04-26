@@ -26,11 +26,12 @@ What is the appropriate OAuth 2/OIDC grant to use for a web application using a 
 ## Run the app
 
     docker-compose up --build
-
-
-
-
-
+    
+`Localhost:80`
+    
+    if using swagger
+    
+`LOcalhost:80/swagger`
 
 
 ## Initilize TTT game
