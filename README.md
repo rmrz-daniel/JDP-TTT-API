@@ -6,9 +6,9 @@
     Documentation for how to run the API and how to use the endpoints is provided below.
     As well as layed out in the frontend UI provided by swagger
     
-    
-#### question: 
-What is the appropriate OAuth 2/OIDC grant to use for a web application using a SPA (Single Page Application) and why?
+ <!--
+    #### question:
+  What is the appropriate OAuth 2/OIDC grant to use for a web application using a SPA (Single Page Application) and why?
     
     There is two grant options for SPA's: 
     
@@ -17,7 +17,8 @@ What is the appropriate OAuth 2/OIDC grant to use for a web application using a 
             : Access Token is not exposed on the client side
             : can return Refresh Tokens
         
-    - the Implicit Flow with Form Post.
+    - the Implicit Flow with Form Post. 
+-->
 
 ## Install
 
